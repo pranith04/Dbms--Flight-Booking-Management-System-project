@@ -1,0 +1,70 @@
+Creation of views using the tables
+
+
+View 1: Flight Schedule View:
+SQL:
+CREATE VIEW flight_schedule_view AS SELECT
+f.flight_id, f.airline_id, f.route_id, s.schedule_id, s.day_of_journey, s.date_of_journey, s.departure_time, s.arrival_time
+FROM
+flight f INNER JOIN
+schedule s ON f.schedule_id = s.schedule_id; select * from flight_schedule_view;
+
+View 2: Available Flights View:
+SQL:
+CREATE VIEW available_flights_view AS SELECT
+f.flight_id,
+ 
+a.airline_name, r.origin, r.destination, s.date_of_journey, s.departure_time, s.arrival_time,
+f.total_seats - COUNT(b.b_id) AS available_seats FROM
+flight f INNER JOIN
+airline a ON f.airline_id = a.airline_id INNER JOIN
+route r ON f.route_id = r.route_id INNER JOIN
+schedule s ON f.schedule_id = s.schedule_id LEFT JOIN
+booking b ON f.flight_id = b.flight_id GROUP BY
+f.flight_id, a.airline_name, r.origin, r.destination, s.date_of_journey, s.departure_time, s.arrival_time, f.total_seats;
+
+select * from available_flights_view;
+
+View 3: Booking Details View:
+SQL:
+CREATE VIEW booking_details_view AS SELECT
+ 
+b.b_id, b.p_id, p.p_firstname, p.p_lastname, p.age,
+p.email_address, f.airline_id, f.route_id, b.payment_mode, b.payment_status
+FROM
+booking b INNER JOIN
+passenger p ON b.p_id = p.p_id INNER JOIN
+flight f ON b.flight_id = f.flight_id; select * from booking_details_view;
+
+View 4: Passenger Manifest View:
+SQL:
+CREATE VIEW passenger_manifest_view AS SELECT
+b.b_id, b.p_id, p.p_firstname, p.p_lastname, p.age,
+ 
+b.seat_id, b.airline_id
+FROM
+booking b INNER JOIN
+passenger p ON b.p_id = p.p_id; select * from passenger_manifest_view;
+
+View 5: Revenue by Airline View:
+This view shows the details of vendors along with their address.
+SQL:
+CREATE VIEW revenue_by_airline_view AS SELECT
+f.airline_id, a.airline_name,
+SUM(s.price) AS total_revenue FROM
+booking b INNER JOIN
+flight f ON b.flight_id = f.flight_id INNER JOIN
+seat_price s ON f.flight_id = s.flight_id INNER JOIN
+ 
+airline a ON f.airline_id = a.airline_id GROUP BY
+f.airline_id, a.airline_name;
+select * from revenue_by_airline_view;
+
+View 6: User Profile View:
+SQL:
+CREATE VIEW user_profile_view AS SELECT
+p.p_id, p.p_firstname, p.p_lastname, p.email_address
+FROM
+passenger p;
+select * from user_profile_view;
+
